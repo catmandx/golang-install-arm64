@@ -1,5 +1,7 @@
 #!/bin/bash
 
+GO_INSTALL_PATH="/usr/local"
+
 function del_go_tools_download() {
 
     echo "Removing Download if it exists"
@@ -12,7 +14,7 @@ function del_go_tools_folder() {
 
     echo "Removing old go tools if it exists"
 
-    rm -rf $PWD/go
+    rm -rf $GO_INSTALL_PATH/go
 
 }
 
@@ -49,18 +51,18 @@ function go_tools() {
 
     DL_HOME=https://go.dev
 
-    echo "Finding latest version of Go for AMD64..."
+    echo "Finding latest version of Go for ARM64..."
 
     #
     # ..:: Get the file path e.g:
     #
-    # /dl/go1.15.linux-amd64.tar.gz
+    # /dl/go1.15.linux-arm64.tar.gz
     #
-    DL_PATH_URL="$(wget --no-check-certificate -qO- https://golang.org/dl/ | grep -oP '\/dl\/go([0-9\.]+)\.linux-amd64\.tar\.gz' | head -n 1)"
+    DL_PATH_URL="$(wget --no-check-certificate -qO- https://golang.org/dl/ | grep -oP '\/dl\/go([0-9\.]+)\.linux-arm64\.tar\.gz' | head -n 1)"
 
     latest="$(echo $DL_PATH_URL | grep -oP 'go[0-9\.]+' | grep -oP '[0-9\.]+' | head -c -2)"
 
-    echo "Downloading latest Go for AMD64: ${latest}"
+    echo "Downloading latest Go for ARM64: ${latest}"
 
     wget --no-check-certificate --continue --show-progress "$DL_HOME$DL_PATH_URL" -P $PWD
 
@@ -70,7 +72,7 @@ function go_tools() {
 
     echo "LATEST: ${GOTOOL_FILE}"
 
-    tar -xzvf $GOTOOL_FILE --directory $PWD
+    tar -xzvf $GOTOOL_FILE --directory $GO_INSTALL_PATH
 
 }
 
@@ -80,10 +82,10 @@ function enviroment() {
 
     if [[ -z "$GOROOT" ]] || [[ -z "$GOPATH" ]]; then
 
-        SETTING_GOROOT="export GOROOT=$PWD/go"
+        SETTING_GOROOT="export GOROOT=$GO_INSTALL_PATH/go"
         SETTING_PATH='export PATH=$PATH:$GOROOT/bin'
 
-        echo "save in .zshrc file" 
+        echo "save in .zshrc file"
 
         echo "" >>~/.zshrc
         echo "# [start] Golang settings, remove after change the installation folder." >>~/.zshrc
@@ -92,7 +94,7 @@ function enviroment() {
         echo "# [end]" >>~/.zshrc
         echo "" >>~/.zshrc
 
-        echo "save in bashrc file" 
+        echo "save in bashrc file"
 
         echo "" >>~/.bashrc
         echo "# [start] Golang settings, remove after change the installation folder." >>~/.bashrc
@@ -104,10 +106,10 @@ function enviroment() {
         echo $SHELL
 
         if [ "$SHELL" = "/usr/bin/zsh" ]; then
-            echo "source ~/.zshrc" 
+            echo "source ~/.zshrc"
             source ~/.zshrc
         else
-            echo "source ~/.bashrc" 
+            echo "source ~/.bashrc"
             source ~/.bashrc
         fi
 
